@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.Principal;
+import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.validation.Valid;
@@ -15,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -77,6 +79,7 @@ public class DadJokes {
 	public String home(Principal principal, Model model) {
 		User currentUser = userService.findByUsername(principal.getName());
 		model.addAttribute("currentUser", currentUser);
+		model.addAttribute("allJokes", jokeService.findAllJokes());
 		return "index.jsp";
 	}
 	
@@ -123,6 +126,55 @@ public class DadJokes {
 		joke.setCreator(currentUser);
 		jokeService.saveJoke(joke);
 		
+		return "redirect:/home";
+	}
+	
+	@GetMapping("/users/{id}")
+	public String userFavorites(@PathVariable("id") Long id, Principal principal, Model model) {
+		User user = userService.findUserById(id);
+		if (userService.findAllUsers().contains(user)) {
+			model.addAttribute("user", user);
+			model.addAttribute("currentUser", userService.findByUsername(principal.getName()));
+			model.addAttribute("allJokes", jokeService.findAllJokesByUser(id));
+			return "userFavorites.jsp";
+		} else {
+			return "redirect:/home";
+		}
+	}
+	
+	@GetMapping("/jokes/{id}/like")
+	public String likeJoke(@PathVariable("id") Long id, Principal principal) {
+		User currentUser = userService.findByUsername(principal.getName());
+		Joke joke = jokeService.findJokeById(id);
+		List<User> usersLiked = joke.getUsersLiked();
+		if (!usersLiked.contains(currentUser)) {
+			usersLiked.add(currentUser);
+			joke.setUsersLiked(usersLiked);
+			jokeService.saveJoke(joke);
+		}
+		return "redirect:/home";
+	}
+	
+	@GetMapping("/jokes/{id}/unlike")
+	public String unlikeJoke(@PathVariable("id") Long id, Principal principal) {
+		User currentUser = userService.findByUsername(principal.getName());
+		Joke joke = jokeService.findJokeById(id);
+		List<User> usersLiked = joke.getUsersLiked();
+		if (usersLiked.contains(currentUser)) {
+			usersLiked.remove(currentUser);
+			joke.setUsersLiked(usersLiked);
+			jokeService.saveJoke(joke);
+		}
+		return "redirect:/home";
+	}
+	
+	@GetMapping("/jokes/{id}/delete")
+	public String deleteJoke(@PathVariable("id") Long id, Principal principal) {
+		User currentUser = userService.findByUsername(principal.getName());
+		Joke joke = jokeService.findJokeById(id);
+		if (joke.getCreator() == currentUser) {
+			jokeService.deleteJoke(id);
+		}
 		return "redirect:/home";
 	}
 

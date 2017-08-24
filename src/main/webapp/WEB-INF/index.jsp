@@ -22,7 +22,8 @@
 </head>
 <body>
 	<c:if test="${currentUser != null}">
-		<h1>Hello ${currentUser.username}</h1>
+		<h1>Howdy, <a href="/users/${currentUser.id}">${currentUser.username}</a>!</h1>
+		<p><a href="/users/${currentUser.id}">My Dad Jokes</a></p>
 		<form id="logoutForm" method="POST" action="/logout">
 	        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 	        <input type="submit" value="Logout!" />
@@ -102,9 +103,42 @@
 	<c:if test="${currentUser != null}">
 		<form id="form_save" action="/saveToImgur" method="POST">
 			<input type="hidden" id="imgflip_url" name="imgflip_url" value="">
-			<input type="submit" value="Save to Favorites">
+			<input type="submit" value="Save Dad Joke">
 			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 		</form>
+	
+		<br>
+		
+		<h1>Dad Jokes Feed</h1>
+		<c:forEach items="${allJokes}" var="joke">
+			<p><a href="/users/${joke.creator.id}">${joke.creator.username}</a> created:</p>
+			<p><img src="http://i.imgur.com/${joke.imgurl}.jpg"></p>
+			
+			<c:choose>
+				<c:when test="${!joke.usersLiked.contains(currentUser)}">
+					<a href="/jokes/${joke.id}/like">Like</a> | 
+				</c:when>
+				<c:otherwise>
+					<a href="/jokes/${joke.id}/unlike">Unlike</a> | 
+				</c:otherwise>
+			</c:choose>
+			
+			${joke.usersLiked.size()} 
+			<c:choose>
+				<c:when test="${joke.usersLiked.size() == 1}">
+					person likes 
+				</c:when>
+				<c:otherwise>
+					people like 
+				</c:otherwise>
+			</c:choose>
+			this
+			
+			<c:if test="${joke.creator == currentUser}">
+				 | <a href="/jokes/${joke.id}/delete">Delete</a>
+			</c:if>
+			<br><br>
+		</c:forEach>
 	</c:if>
 	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
