@@ -11,105 +11,160 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.5.1/css/bulma.min.css">
 	<style>
-		#form_memegen {
+		#registration, #form_memegen, #form_save, #joke {
 			display: none;
 		}
 		
-		#form_save {
-			display: none;
+		nav, footer {
+			background-color: hsl(217, 71%, 53%);
+			color: white;
+			padding: 10px 20px;
+		}
+		
+		a {
+			color: hsl(217, 71%, 53%);
+		}
+		
+		nav a, footer a {
+			color: white;
+			text-decoration: underline;
+		}
+		
+		.joke_creation input[type=submit] {
+			background-color: hsl(217, 71%, 53%);
+			border-radius: 10px;
+			padding: 10px;
+			font-size: 100%;
+			color: white;
+		}
+		
+		#form_customjoke input[type=text] {
+			width: 30%;
+		}
+		
+		body {
+		    display: flex;
+		    min-height: 100vh;
+		    flex-direction: column;
+	    }
+		
+		main {
+		  flex: 1 0 auto;
 		}
 	</style>
 </head>
 <body>
-	<c:if test="${currentUser != null}">
-		<h1>Howdy, <a href="/users/${currentUser.id}">${currentUser.username}</a>!</h1>
-		<p><a href="/users/${currentUser.id}">My Dad Jokes</a></p>
-		<form id="logoutForm" method="POST" action="/logout">
-	        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-	        <input type="submit" value="Logout!" />
-	    </form>
-	    <br>
-	</c:if>
 
-	<c:if test="${currentUser == null}">
-		<c:if test="${logoutMessage != null}">
-	        <c:out value="${logoutMessage}"></c:out>
-	        <br><br>
-	    </c:if>
-		<h1>Register</h1>
-	    <p><form:errors path="user.*"/></p>
-	    <form:form method="POST" action="/registration" modelAttribute="user">
-	        <p>
-	            <form:label path="username">Username:</form:label>
-	            <form:input path="username"/>
-	        </p>
-	        <p>
-	            <form:label path="password">Password:</form:label>
-	            <form:password path="password"/>
-	        </p>
-	        <p>
-	            <form:label path="passwordConfirmation">Password Confirmation:</form:label>
-	            <form:password path="passwordConfirmation"/>
-	        </p>
-	        <input type="submit" value="Register"/>
-	    </form:form>
+<main>
+
+<div class="container has-text-centered">
+
+	<nav class="level">
 		
-		<br>
+		<div class="level-left">
+			
+			<div class="level-item is-size-2">
+				<h1><b>Dad Jokes</b></h1>
+			</div>
+
+		</div> <!-- end level-left -->
 		
-		<h1>Login</h1>
-	    <c:if test="${errorMessage != null}">
-	        <c:out value="${errorMessage}"></c:out>
-	    </c:if>
-	    <form method="POST" action="/">
-	        <p>
-	            <label for="username">Username:</label>
-	            <input type="text" id="username" name="username"/>
-	        </p>
-	        <p>
-	            <label for="password">Password</label>
-	            <input type="password" id="password" name="password"/>
-	        </p>
-	        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-	        <input type="submit" value="Login"/>
-	    </form>
+		<div class="level-right">
+		
+			<c:if test="${currentUser != null}">
+				<div class="level-item">
+					<h3>Howdy, ${currentUser.username}!</h3>
+				</div>
+			</c:if>
+			
+			<c:if test="${currentUser != null}">
+				<div class="level-item">
+					<a href="/users/${currentUser.id}">My Dad Jokes</a>
+				</div>
+				<div class="level-item">
+					<form id="logoutForm" method="POST" action="/logout">
+				        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				        <input type="submit" value="Logout" />
+				    </form>
+		    		</div>
+			</c:if>
+	
+			<c:if test="${currentUser == null}">
+			    
+			    <c:if test="${errorMessage != null}">
+				    <div class="level-item">
+			        		<c:out value="${errorMessage}"></c:out>
+			        </div>
+			    </c:if>
+			    		<div class="level-item">
+					    <form method="POST" action="/">
+				            <input type="text" id="username" name="username" placeholder="username">
+				            <input type="password" id="password" name="password" placeholder="password">
+					        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+					        <input type="submit" value="Login"/>
+					    </form>
+				    </div>
+		    </c:if>
 	    
-	    <br>
+	    </div> <!-- end level-right -->
+   	
+   	</nav>
+    
+	<c:if test="${currentUser == null}">
+		<p><form:errors path="user.*"/></p>
+	    <div id="registration">
+		    <form:form method="POST" action="/registration" modelAttribute="user">
+		            <form:input path="username" placeholder="username"/>
+		            <form:password path="password" placeholder="password"/>
+		            <form:password path="passwordConfirmation" placeholder="password confirmation"/>
+		        <input type="submit" value="Register"/>
+		    </form:form>
+		</div>
+		
+		<p><a href="" id="register_dropdown">REGISTER to save your favorite Dad Jokes and share with others!</a></p>
+		<br>
     </c:if>
 	
-	<form id="form_randomjoke">
-		<input type="submit" value="Random Dad Joke">
-	</form>
+	<div class="joke_creation">
 	
-	<br>
-	
-	<form id="form_customjoke">
-		<input type="text" name="toptext" placeholder="Top text">
-		<input type="text" name="bottomtext" placeholder="Bottom text">
-		<input type="submit" value="Generate Dad Joke">
-	</form>
-	
-	<form id="form_memegen">
-		<input type="hidden" id="memegen_template_id" name="template_id" value="">
-		<input type="hidden" id="memegen_text0" name="text0" value="">
-		<input type="hidden" id="memegen_text1" name="text1" value="">
-		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-		<input type="submit" value="">
-	</form>
-	
-	<br>
-	
-	<div id="joke"></div>
-	
-	<c:if test="${currentUser != null}">
-		<form id="form_save" action="/saveToImgur" method="POST">
-			<input type="hidden" id="imgflip_url" name="imgflip_url" value="">
-			<input type="submit" value="Save Dad Joke">
-			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+		<form id="form_randomjoke">
+			<input type="submit" value="Random Dad Joke">
 		</form>
-	
+		
 		<br>
 		
-		<h1>Dad Jokes Feed</h1>
+		<form id="form_customjoke">
+			<input class="input" type="text" name="toptext" placeholder="Top text">
+			<input class="input" type="text" name="bottomtext" placeholder="Bottom text">
+			<input type="submit" value="Generate Dad Joke">
+		</form>
+		
+		<form id="form_memegen">
+			<input type="hidden" id="memegen_template_id" name="template_id" value="">
+			<input type="hidden" id="memegen_text0" name="text0" value="">
+			<input type="hidden" id="memegen_text1" name="text1" value="">
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+			<input type="submit" value="">
+		</form>
+		
+		<br>
+		
+		<div id="joke"></div>
+	
+		<c:if test="${currentUser != null}">
+			<form id="form_save" action="/saveToImgur" method="POST">
+				<input type="hidden" id="imgflip_url" name="imgflip_url" value="">
+				<input type="submit" value="Save Dad Joke">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				<br><br>
+			</form>
+		</c:if>
+	</div>
+		
+	<c:if test="${currentUser != null}">
+		<div class="level-item is-size-4">
+			<h1><b>Dad Jokes Feed</b></h1>
+		</div>
 		<c:forEach items="${allJokes}" var="joke">
 			<p><a href="/users/${joke.creator.id}">${joke.creator.username}</a> created:</p>
 			<p><img src="http://i.imgur.com/${joke.imgurl}.jpg"></p>
@@ -141,18 +196,38 @@
 		</c:forEach>
 	</c:if>
 	
+</main>
+</div> <!-- end container class -->
+	
+	<footer class="container has-text-centered">
+		&copy; 2017 <a href="http://github.com/chaocharliehuang" target="_blank">
+		Chao Charlie Huang</a> | 
+		Built using Spring Boot, Bulma CSS, icanhazdadjoke API, Imgflip API, and Imgur API
+	</footer>
+	
+
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script>
 		function getRandomTemplateID() {
 			var template_ids = [
-				"11557802", // rick and carl
+				"111962984", // rick and carl
 				"111778475", // danny tanner
-				"111781774", // homer simpson
-				"111782030" // peter griffin
+				"111962581", // homer simpson
+				"111963291", // peter griffin
+				"111963824", // walter white
+				"111964491", // ned stark
+				"111964907", // darth vader
+				"111965293", // philip banks
+				"111985361" // bluths
 				];
 			var randomIndex = Math.floor(Math.random()*template_ids.length);
 			return template_ids[randomIndex];
 		}
+		
+		$("#register_dropdown").click(function(e) {
+			e.preventDefault();
+			$("#registration").slideToggle();
+		});
 	
 		$("#form_randomjoke").submit(function(e) {
 			e.preventDefault();
@@ -210,9 +285,11 @@
 						method: "POST",
 						data: $("#form_memegen").serialize() + info,
 						success: function(res) {
-							$("#joke").html("<img src=" + res.data.url +"><br><br>");
+							$("#joke").hide();
+							$("#joke").html("<img src=" + res.data.url +"><br>");
 							$("#imgflip_url").val(res.data.url);
 							$("#form_save").show();
+							$("#joke").fadeIn("slow");
 						}
 					});
 				}

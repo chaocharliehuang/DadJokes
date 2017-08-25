@@ -71,7 +71,7 @@ public class DadJokes {
 			return "index.jsp";
 		} else {
 			userService.saveUser(user);
-			return "redirect:/";
+			return "redirect:/home";
 		}
 	}
 	
