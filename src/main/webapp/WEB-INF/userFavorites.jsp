@@ -16,6 +16,10 @@
 			padding: 10px 20px;
 		}
 		
+		#logo {
+			height: 50px;
+		}
+		
 		a {
 			color: hsl(217, 71%, 53%);
 		}
@@ -38,25 +42,33 @@
 </head>
 <body>
 
-<main>
-
-<div class="container has-text-centered">
-
-	<nav class="level">
-
-		<div class="level-left">
-				
-			<div class="level-item is-size-2">
-				<h1><b>Dad Jokes</b></h1>
-			</div>
+<main class="has-text-centered">
 	
-		</div> <!-- end level-left -->
+	<nav>
+	
+		<div class="container level">
+
+			<div class="level-left">
+			
+				<div class="level-item">
+					<a href="/home">
+						<img src="http://i.imgur.com/XQE3hpU.png" alt="logo" id="logo">
+					</a>
+				</div>
+					
+				<div class="level-item is-size-2">
+					<h1><b>Dad Jokes</b></h1>
+				</div>
 		
-		<div class="level-right">
-			<div class="level-item">
-				<a href="/home">Home</a>
-			</div>
-		</div> <!-- end level-right -->
+			</div> <!-- end level-left -->
+			
+			<div class="level-right">
+				<div class="level-item">
+					<a href="/home">Home</a>
+				</div>
+			</div> <!-- end level-right -->
+		
+		</div>
 	
 	</nav>
 
@@ -73,10 +85,10 @@
 			</c:forEach>
 		</div>
 	</c:if>
-</main>
-</div>
 
-	<footer class="container has-text-centered">
+</main>
+
+	<footer class="has-text-centered">
 		&copy; 2017 <a href="http://github.com/chaocharliehuang" target="_blank">
 		Chao Charlie Huang</a> | 
 		Built using Spring Boot, Bulma CSS, icanhazdadjoke API, Imgflip API, and Imgur API

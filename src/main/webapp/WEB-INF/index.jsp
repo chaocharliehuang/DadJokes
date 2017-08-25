@@ -15,6 +15,10 @@
 			display: none;
 		}
 		
+		#logo {
+			height: 50px;
+		}
+		
 		nav, footer {
 			background-color: hsl(217, 71%, 53%);
 			color: white;
@@ -33,9 +37,10 @@
 		.joke_creation input[type=submit] {
 			background-color: hsl(217, 71%, 53%);
 			border-radius: 10px;
-			padding: 10px;
+			padding: 8px;
 			font-size: 100%;
 			color: white;
+			outline: none;
 		}
 		
 		#form_customjoke input[type=text] {
@@ -55,164 +60,177 @@
 </head>
 <body>
 
-<main>
+<main class="has-text-centered">
 
-<div class="container has-text-centered">
-
-	<nav class="level">
+	<nav>
 		
-		<div class="level-left">
-			
-			<div class="level-item is-size-2">
-				<h1><b>Dad Jokes</b></h1>
-			</div>
-
-		</div> <!-- end level-left -->
+		<div class="container level">
 		
-		<div class="level-right">
-		
-			<c:if test="${currentUser != null}">
+			<div class="level-left">
+				
 				<div class="level-item">
-					<h3>Howdy, ${currentUser.username}!</h3>
+					<a href="/home">
+						<img src="http://i.imgur.com/XQE3hpU.png" alt="logo" id="logo">
+					</a>
 				</div>
-			</c:if>
-			
-			<c:if test="${currentUser != null}">
-				<div class="level-item">
-					<a href="/users/${currentUser.id}">My Dad Jokes</a>
+				
+				<div class="level-item is-size-2">
+					<h1><b>Dad Jokes</b></h1>
 				</div>
-				<div class="level-item">
-					<form id="logoutForm" method="POST" action="/logout">
-				        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-				        <input type="submit" value="Logout" />
-				    </form>
-		    		</div>
-			</c:if>
 	
-			<c:if test="${currentUser == null}">
-			    
-			    <c:if test="${errorMessage != null}">
-				    <div class="level-item">
-			        		<c:out value="${errorMessage}"></c:out>
-			        </div>
-			    </c:if>
-			    		<div class="level-item">
-					    <form method="POST" action="/">
-				            <input type="text" id="username" name="username" placeholder="username">
-				            <input type="password" id="password" name="password" placeholder="password">
+			</div> <!-- end level-left -->
+			
+			<div class="level-right">
+			
+				<c:if test="${currentUser != null}">
+					<div class="level-item">
+						<h3>Howdy, ${currentUser.username}!</h3>
+					</div>
+				</c:if>
+				
+				<c:if test="${currentUser != null}">
+					<div class="level-item">
+						<a href="/users/${currentUser.id}">My Dad Jokes</a>
+					</div>
+					<div class="level-item">
+						<form id="logoutForm" method="POST" action="/logout">
 					        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-					        <input type="submit" value="Login"/>
+					        <input type="submit" value="Logout" />
 					    </form>
-				    </div>
-		    </c:if>
+			    		</div>
+				</c:if>
+		
+				<c:if test="${currentUser == null}">
+				    
+				    <c:if test="${errorMessage != null}">
+					    <div class="level-item">
+				        		<c:out value="${errorMessage}"></c:out>
+				        </div>
+				    </c:if>
+				    		<div class="level-item">
+						    <form method="POST" action="/">
+					            <input type="text" id="username" name="username" placeholder="username">
+					            <input type="password" id="password" name="password" placeholder="password">
+						        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+						        <input type="submit" value="Login"/>
+						    </form>
+					    </div>
+			    </c:if>
+		    
+		    </div> <!-- end level-right -->
 	    
-	    </div> <!-- end level-right -->
+	    </div>
    	
    	</nav>
-    
-	<c:if test="${currentUser == null}">
-		<p><form:errors path="user.*"/></p>
-	    <div id="registration">
-		    <form:form method="POST" action="/registration" modelAttribute="user">
-		            <form:input path="username" placeholder="username"/>
-		            <form:password path="password" placeholder="password"/>
-		            <form:password path="passwordConfirmation" placeholder="password confirmation"/>
-		        <input type="submit" value="Register"/>
-		    </form:form>
-		</div>
+   	
+   	<br>
+   	
+   	<div class="container">
+   	
+		<c:if test="${currentUser == null}">
+			<p><form:errors path="user.*"/></p>
+		    <div id="registration">
+			    <form:form method="POST" action="/registration" modelAttribute="user">
+			            <form:input path="username" placeholder="username"/>
+			            <form:password path="password" placeholder="password"/>
+			            <form:password path="passwordConfirmation" placeholder="password confirmation"/>
+			        <input type="submit" value="Register"/>
+			    </form:form>
+			</div>
+			
+			<p><b><a href="" id="register_dropdown">REGISTER to save your favorite Dad Jokes and share with others!</a></b></p>
+			<br>
+	    </c:if>
 		
-		<p><a href="" id="register_dropdown">REGISTER to save your favorite Dad Jokes and share with others!</a></p>
-		<br>
-    </c:if>
-	
-	<div class="joke_creation">
-	
-		<form id="form_randomjoke">
-			<input type="submit" value="Random Dad Joke">
-		</form>
+		<div class="joke_creation">
 		
-		<br>
-		
-		<form id="form_customjoke">
-			<input class="input" type="text" name="toptext" placeholder="Top text">
-			<input class="input" type="text" name="bottomtext" placeholder="Bottom text">
-			<input type="submit" value="Generate Dad Joke">
-		</form>
-		
-		<form id="form_memegen">
-			<input type="hidden" id="memegen_template_id" name="template_id" value="">
-			<input type="hidden" id="memegen_text0" name="text0" value="">
-			<input type="hidden" id="memegen_text1" name="text1" value="">
-			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-			<input type="submit" value="">
-		</form>
-		
-		<br>
-		
-		<div id="joke"></div>
-	
-		<c:if test="${currentUser != null}">
-			<form id="form_save" action="/saveToImgur" method="POST">
-				<input type="hidden" id="imgflip_url" name="imgflip_url" value="">
-				<input type="submit" value="Save Dad Joke">
-				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-				<br><br>
+			<form id="form_randomjoke">
+				<input type="submit" value="Get Random Dad Joke">
 			</form>
-		</c:if>
-	</div>
+			
+			<br>
+			
+			<form id="form_customjoke">
+				<input class="input" type="text" name="toptext" placeholder="Top text">
+				<input class="input" type="text" name="bottomtext" placeholder="Bottom text">
+				<input type="submit" value="Generate Dad Joke">
+			</form>
+			
+			<form id="form_memegen">
+				<input type="hidden" id="memegen_template_id" name="template_id" value="">
+				<input type="hidden" id="memegen_text0" name="text0" value="">
+				<input type="hidden" id="memegen_text1" name="text1" value="">
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				<input type="submit" value="">
+			</form>
+			
+			<br>
+			
+			<div id="joke"></div>
 		
-	<%-- <c:if test="${currentUser != null}">
-		<div class="level-item is-size-4">
-			<h1><b>Dad Jokes Feed</b></h1>
-		</div>
-		<c:forEach items="${allJokes}" var="joke">
-			<p><a href="/users/${joke.creator.id}">${joke.creator.username}</a> created:</p>
-			<p><img src="http://i.imgur.com/${joke.imgurl}.jpg"></p>
-			
-			<c:choose>
-				<c:when test="${!joke.usersLiked.contains(currentUser)}">
-					<a href="/jokes/${joke.id}/like">Like</a> | 
-				</c:when>
-				<c:otherwise>
-					<a href="/jokes/${joke.id}/unlike">Unlike</a> | 
-				</c:otherwise>
-			</c:choose>
-			
-			${joke.usersLiked.size()} 
-			<c:choose>
-				<c:when test="${joke.usersLiked.size() == 1}">
-					person likes 
-				</c:when>
-				<c:otherwise>
-					people like 
-				</c:otherwise>
-			</c:choose>
-			this
-			
-			<c:if test="${joke.creator == currentUser}">
-				 | <a href="/jokes/${joke.id}/delete">Delete</a>
+			<c:if test="${currentUser != null}">
+				<form id="form_save" action="/saveToImgur" method="POST">
+					<input type="hidden" id="imgflip_url" name="imgflip_url" value="">
+					<input type="submit" value="Save Dad Joke">
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+					<br><br>
+				</form>
 			</c:if>
-			<br><br>
-		</c:forEach>
-	</c:if> --%>
-	
-	<c:if test="${currentUser != null}">
-		<div class="level-item is-size-4">
-			<h1><b>Dad Jokes Feed</b></h1>
 		</div>
-		<div id="jokes_feed">
-			<c:forEach items="${jokes}" var="joke">
+			
+		<%-- <c:if test="${currentUser != null}">
+			<div class="level-item is-size-4">
+				<h1><b>Dad Jokes Feed</b></h1>
+			</div>
+			<c:forEach items="${allJokes}" var="joke">
 				<p><a href="/users/${joke.creator.id}">${joke.creator.username}</a> created:</p>
 				<p><img src="http://i.imgur.com/${joke.imgurl}.jpg"></p>
-				<br>
+				
+				<c:choose>
+					<c:when test="${!joke.usersLiked.contains(currentUser)}">
+						<a href="/jokes/${joke.id}/like">Like</a> | 
+					</c:when>
+					<c:otherwise>
+						<a href="/jokes/${joke.id}/unlike">Unlike</a> | 
+					</c:otherwise>
+				</c:choose>
+				
+				${joke.usersLiked.size()} 
+				<c:choose>
+					<c:when test="${joke.usersLiked.size() == 1}">
+						person likes 
+					</c:when>
+					<c:otherwise>
+						people like 
+					</c:otherwise>
+				</c:choose>
+				this
+				
+				<c:if test="${joke.creator == currentUser}">
+					 | <a href="/jokes/${joke.id}/delete">Delete</a>
+				</c:if>
+				<br><br>
 			</c:forEach>
-		</div>
-	</c:if>
+		</c:if> --%>
+		
+		<c:if test="${currentUser != null}">
+			<div class="level-item is-size-3">
+				<h1><b>Dad Jokes Feed</b></h1>
+			</div>
+			<div id="jokes_feed">
+				<c:forEach items="${jokes}" var="joke">
+					<p><a href="/users/${joke.creator.id}">${joke.creator.username}</a> created:</p>
+					<p><img src="http://i.imgur.com/${joke.imgurl}.jpg"></p>
+					<br>
+				</c:forEach>
+			</div>
+		</c:if>
+	
+	</div> <!-- end container class -->
 	
 </main>
-</div> <!-- end container class -->
 	
-	<footer class="container has-text-centered">
+	<footer class="has-text-centered">
 		&copy; 2017 <a href="http://github.com/chaocharliehuang" target="_blank">
 		Chao Charlie Huang</a> | 
 		Built using Spring Boot, Bulma CSS, icanhazdadjoke API, Imgflip API, and Imgur API
