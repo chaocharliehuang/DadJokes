@@ -1,7 +1,5 @@
 package com.chaocharliehuang.dadjokes.services;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -35,12 +33,9 @@ public class JokeService {
 		jokeRepository.delete(id);
 	}
 	
-	public List<Joke> findAllJokes() {
-		return jokeRepository.findTop20ByOrderByIdDesc();
-	}
-	
-	public List<Joke> findAllJokesByUser(Long id) {
-		return jokeRepository.findByCreatorIdOrderByIdDesc(id);
+	public Page<Joke> findAllJokesByUser(Long id, int pageNumber) {
+		PageRequest pageRequest = new PageRequest(pageNumber, PAGE_SIZE, Sort.Direction.DESC, "id");
+		return jokeRepository.findByCreatorIdOrderByIdDesc(id, pageRequest);
 	}
 	
 	public Page<Joke> findAllJokesPaginated(int pageNumber) {

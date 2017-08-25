@@ -6,7 +6,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>My Dad Jokes</title>
+	<title>Dad Jokes created by ${user.username}</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.5.1/css/bulma.min.css">
 	<style>
@@ -65,34 +65,13 @@
 		<br><br>
 	</div>
 	
-	<c:if test="${!empty allJokes}">
-		<c:forEach items="${allJokes}" var="joke">
-			<p><img src="http://i.imgur.com/${joke.imgurl}.jpg"></p>
-			<c:choose>
-				<c:when test="${!joke.usersLiked.contains(currentUser)}">
-					<a href="/jokes/${joke.id}/like">Like</a> | 
-				</c:when>
-				<c:otherwise>
-					<a href="/jokes/${joke.id}/unlike">Unlike</a> | 
-				</c:otherwise>
-			</c:choose>
-			
-			${joke.usersLiked.size()} 
-			<c:choose>
-				<c:when test="${joke.usersLiked.size() == 1}">
-					person likes 
-				</c:when>
-				<c:otherwise>
-					people like 
-				</c:otherwise>
-			</c:choose>
-			this
-			
-			<c:if test="${joke.creator == currentUser}">
-				 | <a href="/jokes/${joke.id}/delete">Delete</a>
-			</c:if>
-			<br><br>
-		</c:forEach>
+	<c:if test="${!empty jokes}">
+		<div id="jokes_feed">
+			<c:forEach items="${jokes}" var="joke">
+				<p><img src="http://i.imgur.com/${joke.imgurl}.jpg"></p>
+				<br>
+			</c:forEach>
+		</div>
 	</c:if>
 </main>
 </div>
@@ -102,6 +81,32 @@
 		Chao Charlie Huang</a> | 
 		Built using Spring Boot, Bulma CSS, icanhazdadjoke API, Imgflip API, and Imgur API
 	</footer>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script>
+		var page = 1;
+		$(window).scroll(function() {
+	        if($(window).scrollTop() + $(window).height() == $(document).height()) {
+	            page++;
+	            $.ajax({
+	    				url: "/users/" + ${user.id} + "/jokes/pages/" + page,
+	    				method: "GET",
+	    				success: function(res) {
+	    					var jokesFeedHTML = '';
+	    					var resObject = JSON.parse(res);
+	    					for (var key in resObject) {
+	    						jokesFeedHTML += '<p><a href="/users/';
+	    						jokesFeedHTML += resObject[key].creatorID + '">';
+	    						jokesFeedHTML += resObject[key].creatorUsername + '</a> created:</p>';
+	    						jokesFeedHTML += '<p><img src="http://i.imgur.com/';
+	    						jokesFeedHTML += resObject[key].imgurl + '.jpg"></p><br>';
+	    					}
+	    					$("#jokes_feed").append(jokesFeedHTML);
+	    				}
+	    			});
+	        }
+	    });
+	</script>
 
 </body>
 </html>

@@ -10,7 +10,9 @@ import java.util.List;
 import javax.net.ssl.HttpsURLConnection;
 import javax.validation.Valid;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -79,7 +81,7 @@ public class DadJokes {
 	public String home(Principal principal, Model model) {
 		User currentUser = userService.findByUsername(principal.getName());
 		model.addAttribute("currentUser", currentUser);
-		model.addAttribute("allJokes", jokeService.findAllJokes());
+		model.addAttribute("jokes", jokeService.findAllJokesPaginated(0).getContent());
 		return "index.jsp";
 	}
 	
@@ -135,11 +137,28 @@ public class DadJokes {
 		if (userService.findAllUsers().contains(user)) {
 			model.addAttribute("user", user);
 			model.addAttribute("currentUser", userService.findByUsername(principal.getName()));
-			model.addAttribute("allJokes", jokeService.findAllJokesByUser(id));
+			model.addAttribute("jokes", jokeService.findAllJokesByUser(id, 0).getContent());
 			return "userFavorites.jsp";
 		} else {
 			return "redirect:/home";
 		}
+	}
+	
+	@GetMapping("/users/{id}/jokes/pages/{pageNumber}")
+	@ResponseBody
+	public String getUserJokesPerPage(
+			@PathVariable("id") Long id,
+			@PathVariable("pageNumber") int pageNumber) throws JSONException {
+		Page<Joke> jokes = (Page<Joke>) jokeService.findAllJokesByUser(id, pageNumber - 1);
+		JSONObject jokesJSON = new JSONObject();
+		for (Joke joke : jokes.getContent()) {
+			JSONObject jokeJSON = new JSONObject();
+			jokeJSON.put("imgurl", joke.getImgurl());
+			jokeJSON.put("creatorID", joke.getCreator().getId());
+			jokeJSON.put("creatorUsername", joke.getCreator().getUsername());
+			jokesJSON.put(joke.getId().toString(), jokeJSON);
+		}
+		return jokesJSON.toString();
 	}
 	
 	@GetMapping("/jokes/{id}/like")
@@ -176,6 +195,21 @@ public class DadJokes {
 			jokeService.deleteJoke(id);
 		}
 		return "redirect:/home";
+	}
+	
+	@GetMapping("/jokes/pages/{pageNumber}")
+	@ResponseBody
+	public String getJokesPerPage(@PathVariable("pageNumber") int pageNumber) throws JSONException {
+		Page<Joke> jokes = jokeService.findAllJokesPaginated(pageNumber - 1);
+		JSONObject jokesJSON = new JSONObject();
+		for (Joke joke : jokes.getContent()) {
+			JSONObject jokeJSON = new JSONObject();
+			jokeJSON.put("imgurl", joke.getImgurl());
+			jokeJSON.put("creatorID", joke.getCreator().getId());
+			jokeJSON.put("creatorUsername", joke.getCreator().getUsername());
+			jokesJSON.put(joke.getId().toString(), jokeJSON);
+		}
+		return jokesJSON.toString();
 	}
 
 }

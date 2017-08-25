@@ -161,7 +161,7 @@
 		</c:if>
 	</div>
 		
-	<c:if test="${currentUser != null}">
+	<%-- <c:if test="${currentUser != null}">
 		<div class="level-item is-size-4">
 			<h1><b>Dad Jokes Feed</b></h1>
 		</div>
@@ -194,6 +194,19 @@
 			</c:if>
 			<br><br>
 		</c:forEach>
+	</c:if> --%>
+	
+	<c:if test="${currentUser != null}">
+		<div class="level-item is-size-4">
+			<h1><b>Dad Jokes Feed</b></h1>
+		</div>
+		<div id="jokes_feed">
+			<c:forEach items="${jokes}" var="joke">
+				<p><a href="/users/${joke.creator.id}">${joke.creator.username}</a> created:</p>
+				<p><img src="http://i.imgur.com/${joke.imgurl}.jpg"></p>
+				<br>
+			</c:forEach>
+		</div>
 	</c:if>
 	
 </main>
@@ -206,6 +219,7 @@
 	</footer>
 	
 
+<!-- ----------------JAVASCRIPT--------------- -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script>
 		function getRandomTemplateID() {
@@ -295,6 +309,29 @@
 				}
 			});
 		});
+		
+		var page = 1;
+		$(window).scroll(function() {
+            if($(window).scrollTop() + $(window).height() == $(document).height()) {
+                page++;
+                $.ajax({
+	    				url: "/jokes/pages/" + page,
+	    				method: "GET",
+	    				success: function(res) {
+	    					var jokesFeedHTML = '';
+	    					var resObject = JSON.parse(res);
+	    					for (var key in resObject) {
+	    						jokesFeedHTML += '<p><a href="/users/';
+	    						jokesFeedHTML += resObject[key].creatorID + '">';
+	    						jokesFeedHTML += resObject[key].creatorUsername + '</a> created:</p>';
+	    						jokesFeedHTML += '<p><img src="http://i.imgur.com/';
+	    						jokesFeedHTML += resObject[key].imgurl + '.jpg"></p><br>';
+	    					}
+	    					$("#jokes_feed").append(jokesFeedHTML);
+	    				}
+	    			});
+            }
+        });
 		
 	</script>
 </body>
