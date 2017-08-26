@@ -90,7 +90,7 @@
 				
 				<c:if test="${currentUser != null}">
 					<div class="level-item">
-						<a href="/users/${currentUser.id}">My Dad Jokes</a>
+						<a href="/users/${currentUser.id}">My Profile</a>
 					</div>
 					<div class="level-item">
 						<form id="logoutForm" method="POST" action="/logout">
@@ -218,11 +218,22 @@
 				<h1><b>Dad Jokes Feed</b></h1>
 			</div>
 			<div id="jokes_feed">
-				<c:forEach items="${jokes}" var="joke">
+				<%-- <c:forEach items="${jokes}" var="joke">
 					<p><a href="/users/${joke.creator.id}">${joke.creator.username}</a> created:</p>
 					<p><img src="http://i.imgur.com/${joke.imgurl}.jpg"></p>
+					<p>
+						<c:choose>
+							<c:when test="${joke.action == 'Like'}">
+								<a href="/users/${joke.jokeID}/like">Like</a> | 
+							</c:when>
+							<c:otherwise>
+								<a href="/users/${joke.jokeID}/unlike">Unlike</a> | 
+							</c:otherwise>
+						</c:choose>
+						${joke.numberOfLikes} likes total
+					</p>
 					<br>
-				</c:forEach>
+				</c:forEach> --%>
 			</div>
 		</c:if>
 	
@@ -328,6 +339,41 @@
 			});
 		});
 		
+		$(document).ready(function () {
+			$.ajax({
+				url: "/jokes/pages/1",
+				method: "GET",
+				success: function(res) {
+					var jokesFeedHTML = '';
+					var resObject = JSON.parse(res);
+					for (var key in resObject) {
+						jokesFeedHTML += '<p><a href="/users/';
+						jokesFeedHTML += resObject[key].creatorID + '">';
+						jokesFeedHTML += resObject[key].creatorUsername + '</a> created:</p>';
+						jokesFeedHTML += '<p><img src="http://i.imgur.com/';
+						jokesFeedHTML += resObject[key].imgurl + '.jpg"></p><p>';
+						
+						if (resObject[key].action === "Like") {
+							jokesFeedHTML += '<a href="/jokes/' + resObject[key].jokeID;
+							jokesFeedHTML += '/like">Like</a>';
+						} else {
+							jokesFeedHTML += '<a href="/jokes/' + resObject[key].jokeID;
+							jokesFeedHTML += '/unlike">Unlike</a>';
+						}
+						jokesFeedHTML += ' | ' + resObject[key].numberOfLikes + ' total likes';
+						
+						if (resObject[key].delete) {
+							jokesFeedHTML += ' | <a href="/jokes/' + resObject[key].jokeID;
+							jokesFeedHTML += '/delete">Delete</a>';
+						}
+						
+						jokesFeedHTML += '</p><br>';
+					}
+					$("#jokes_feed").append(jokesFeedHTML);
+				}
+			});
+		});
+		
 		var page = 1;
 		$(window).scroll(function() {
             if($(window).scrollTop() + $(window).height() == $(document).height()) {
@@ -343,7 +389,23 @@
 	    						jokesFeedHTML += resObject[key].creatorID + '">';
 	    						jokesFeedHTML += resObject[key].creatorUsername + '</a> created:</p>';
 	    						jokesFeedHTML += '<p><img src="http://i.imgur.com/';
-	    						jokesFeedHTML += resObject[key].imgurl + '.jpg"></p><br>';
+	    						jokesFeedHTML += resObject[key].imgurl + '.jpg"></p><p>';
+	    						
+	    						if (resObject[key].action === "Like") {
+	    							jokesFeedHTML += '<a href="/jokes/' + resObject[key].jokeID;
+	    							jokesFeedHTML += '/like">Like</a>';
+	    						} else {
+	    							jokesFeedHTML += '<a href="/jokes/' + resObject[key].jokeID;
+	    							jokesFeedHTML += '/unlike">Unlike</a>';
+	    						}
+	    						jokesFeedHTML += ' | ' + resObject[key].numberOfLikes + ' total likes';
+	    						
+	    						if (resObject[key].delete) {
+	    							jokesFeedHTML += ' | <a href="/jokes/' + resObject[key].jokeID;
+	    							jokesFeedHTML += '/delete">Delete</a>';
+	    						}
+	    						
+	    						jokesFeedHTML += '</p><br>';
 	    					}
 	    					$("#jokes_feed").append(jokesFeedHTML);
 	    				}

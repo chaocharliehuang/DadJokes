@@ -148,14 +148,28 @@ public class DadJokes {
 	@ResponseBody
 	public String getUserJokesPerPage(
 			@PathVariable("id") Long id,
-			@PathVariable("pageNumber") int pageNumber) throws JSONException {
+			@PathVariable("pageNumber") int pageNumber,
+			Principal principal) throws JSONException {
+		User currentUser = userService.findByUsername(principal.getName());
 		Page<Joke> jokes = (Page<Joke>) jokeService.findAllJokesByUser(id, pageNumber - 1);
 		JSONObject jokesJSON = new JSONObject();
 		for (Joke joke : jokes.getContent()) {
 			JSONObject jokeJSON = new JSONObject();
+			jokeJSON.put("jokeID", joke.getId());
 			jokeJSON.put("imgurl", joke.getImgurl());
 			jokeJSON.put("creatorID", joke.getCreator().getId());
 			jokeJSON.put("creatorUsername", joke.getCreator().getUsername());
+			jokeJSON.put("numberOfLikes", joke.getUsersLiked().size());
+			
+			if (joke.getCreator().getId() == currentUser.getId()) {
+				jokeJSON.put("delete", true);
+			}
+			
+			if (joke.getUsersLiked().contains(currentUser)) {
+				jokeJSON.put("action", "Unlike");
+			} else {
+				jokeJSON.put("action", "Like");
+			}
 			jokesJSON.put(joke.getId().toString(), jokeJSON);
 		}
 		return jokesJSON.toString();
@@ -199,14 +213,29 @@ public class DadJokes {
 	
 	@GetMapping("/jokes/pages/{pageNumber}")
 	@ResponseBody
-	public String getJokesPerPage(@PathVariable("pageNumber") int pageNumber) throws JSONException {
+	public String getJokesPerPage(
+			@PathVariable("pageNumber") int pageNumber,
+			Principal principal) throws JSONException {
+		User currentUser = userService.findByUsername(principal.getName());
 		Page<Joke> jokes = jokeService.findAllJokesPaginated(pageNumber - 1);
 		JSONObject jokesJSON = new JSONObject();
 		for (Joke joke : jokes.getContent()) {
 			JSONObject jokeJSON = new JSONObject();
+			jokeJSON.put("jokeID", joke.getId());
 			jokeJSON.put("imgurl", joke.getImgurl());
 			jokeJSON.put("creatorID", joke.getCreator().getId());
 			jokeJSON.put("creatorUsername", joke.getCreator().getUsername());
+			jokeJSON.put("numberOfLikes", joke.getUsersLiked().size());
+			
+			if (joke.getCreator().getId() == currentUser.getId()) {
+				jokeJSON.put("delete", true);
+			}
+			
+			if (joke.getUsersLiked().contains(currentUser)) {
+				jokeJSON.put("action", "Unlike");
+			} else {
+				jokeJSON.put("action", "Like");
+			}
 			jokesJSON.put(joke.getId().toString(), jokeJSON);
 		}
 		return jokesJSON.toString();

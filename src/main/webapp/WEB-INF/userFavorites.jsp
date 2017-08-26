@@ -20,6 +20,10 @@
 			height: 50px;
 		}
 		
+		#bubbles {
+			height: 35px;
+		}
+		
 		a {
 			color: hsl(217, 71%, 53%);
 		}
@@ -64,6 +68,10 @@
 			
 			<div class="level-right">
 				<div class="level-item">
+					<img src="http://i.imgur.com/oyS1IiF.png" id="bubbles">
+				</div>
+			
+				<div class="level-item">
 					<a href="/home">Home</a>
 				</div>
 			</div> <!-- end level-right -->
@@ -79,10 +87,10 @@
 	
 	<c:if test="${!empty jokes}">
 		<div id="jokes_feed">
-			<c:forEach items="${jokes}" var="joke">
+			<%-- <c:forEach items="${jokes}" var="joke">
 				<p><img src="http://i.imgur.com/${joke.imgurl}.jpg"></p>
 				<br>
-			</c:forEach>
+			</c:forEach> --%>
 		</div>
 	</c:if>
 
@@ -96,6 +104,38 @@
 	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script>
+		$(document).ready(function () {
+			$.ajax({
+				url: "/users/" + ${user.id} + "/jokes/pages/1",
+				method: "GET",
+				success: function(res) {
+					var jokesFeedHTML = '';
+					var resObject = JSON.parse(res);
+					for (var key in resObject) {
+						jokesFeedHTML += '<p><img src="http://i.imgur.com/';
+						jokesFeedHTML += resObject[key].imgurl + '.jpg"></p><p>';
+						
+						if (resObject[key].action === "Like") {
+							jokesFeedHTML += '<a href="/jokes/' + resObject[key].jokeID;
+							jokesFeedHTML += '/like">Like</a>';
+						} else {
+							jokesFeedHTML += '<a href="/jokes/' + resObject[key].jokeID;
+							jokesFeedHTML += '/unlike">Unlike</a>';
+						}
+						jokesFeedHTML += ' | ' + resObject[key].numberOfLikes + ' total likes';
+						
+						if (resObject[key].delete) {
+							jokesFeedHTML += ' | <a href="/jokes/' + resObject[key].jokeID;
+							jokesFeedHTML += '/delete">Delete</a>';
+						}
+						
+						jokesFeedHTML += '</p><br>';
+					}
+					$("#jokes_feed").append(jokesFeedHTML);
+				}
+			});
+		});
+		
 		var page = 1;
 		$(window).scroll(function() {
 	        if($(window).scrollTop() + $(window).height() == $(document).height()) {
@@ -107,11 +147,24 @@
 	    					var jokesFeedHTML = '';
 	    					var resObject = JSON.parse(res);
 	    					for (var key in resObject) {
-	    						jokesFeedHTML += '<p><a href="/users/';
-	    						jokesFeedHTML += resObject[key].creatorID + '">';
-	    						jokesFeedHTML += resObject[key].creatorUsername + '</a> created:</p>';
 	    						jokesFeedHTML += '<p><img src="http://i.imgur.com/';
-	    						jokesFeedHTML += resObject[key].imgurl + '.jpg"></p><br>';
+	    						jokesFeedHTML += resObject[key].imgurl + '.jpg"></p><p>';
+	    						
+	    						if (resObject[key].action === "Like") {
+	    							jokesFeedHTML += '<a href="/jokes/' + resObject[key].jokeID;
+	    							jokesFeedHTML += '/like">Like</a>';
+	    						} else {
+	    							jokesFeedHTML += '<a href="/jokes/' + resObject[key].jokeID;
+	    							jokesFeedHTML += '/unlike">Unlike</a>';
+	    						}
+	    						jokesFeedHTML += ' | ' + resObject[key].numberOfLikes + ' total likes';
+	    						
+	    						if (resObject[key].delete) {
+	    							jokesFeedHTML += ' | <a href="/jokes/' + resObject[key].jokeID;
+	    							jokesFeedHTML += '/delete">Delete</a>';
+	    						}
+	    						
+	    						jokesFeedHTML += '</p><br>';
 	    					}
 	    					$("#jokes_feed").append(jokesFeedHTML);
 	    				}
