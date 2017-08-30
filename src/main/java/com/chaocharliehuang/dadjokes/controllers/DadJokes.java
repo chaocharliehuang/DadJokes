@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -152,7 +153,7 @@ public class DadJokes {
 			Principal principal) throws JSONException {
 		User currentUser = userService.findByUsername(principal.getName());
 		Page<Joke> jokes = (Page<Joke>) jokeService.findAllJokesByUser(id, pageNumber - 1);
-		JSONObject jokesJSON = new JSONObject();
+		ArrayList<JSONObject> jokesArr = new ArrayList<JSONObject>();
 		for (Joke joke : jokes.getContent()) {
 			JSONObject jokeJSON = new JSONObject();
 			jokeJSON.put("jokeID", joke.getId());
@@ -170,9 +171,9 @@ public class DadJokes {
 			} else {
 				jokeJSON.put("action", "Like");
 			}
-			jokesJSON.put(joke.getId().toString(), jokeJSON);
+			jokesArr.add(jokeJSON);
 		}
-		return jokesJSON.toString();
+		return jokesArr.toString();
 	}
 	
 	@GetMapping("/jokes/{id}/like")
@@ -218,7 +219,7 @@ public class DadJokes {
 			Principal principal) throws JSONException {
 		User currentUser = userService.findByUsername(principal.getName());
 		Page<Joke> jokes = jokeService.findAllJokesPaginated(pageNumber - 1);
-		JSONObject jokesJSON = new JSONObject();
+		ArrayList<JSONObject> jokesArr = new ArrayList<JSONObject>();
 		for (Joke joke : jokes.getContent()) {
 			JSONObject jokeJSON = new JSONObject();
 			jokeJSON.put("jokeID", joke.getId());
@@ -236,9 +237,9 @@ public class DadJokes {
 			} else {
 				jokeJSON.put("action", "Like");
 			}
-			jokesJSON.put(joke.getId().toString(), jokeJSON);
+			jokesArr.add(jokeJSON);
 		}
-		return jokesJSON.toString();
+		return jokesArr.toString();
 	}
 
 }

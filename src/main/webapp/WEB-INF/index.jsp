@@ -56,6 +56,10 @@
 		main {
 		  flex: 1 0 auto;
 		}
+		
+		footer {
+			margin-top: 20px;
+		}
 	</style>
 </head>
 <body>
@@ -177,64 +181,12 @@
 				</form>
 			</c:if>
 		</div>
-			
-		<%-- <c:if test="${currentUser != null}">
-			<div class="level-item is-size-4">
-				<h1><b>Dad Jokes Feed</b></h1>
-			</div>
-			<c:forEach items="${allJokes}" var="joke">
-				<p><a href="/users/${joke.creator.id}">${joke.creator.username}</a> created:</p>
-				<p><img src="http://i.imgur.com/${joke.imgurl}.jpg"></p>
-				
-				<c:choose>
-					<c:when test="${!joke.usersLiked.contains(currentUser)}">
-						<a href="/jokes/${joke.id}/like">Like</a> | 
-					</c:when>
-					<c:otherwise>
-						<a href="/jokes/${joke.id}/unlike">Unlike</a> | 
-					</c:otherwise>
-				</c:choose>
-				
-				${joke.usersLiked.size()} 
-				<c:choose>
-					<c:when test="${joke.usersLiked.size() == 1}">
-						person likes 
-					</c:when>
-					<c:otherwise>
-						people like 
-					</c:otherwise>
-				</c:choose>
-				this
-				
-				<c:if test="${joke.creator == currentUser}">
-					 | <a href="/jokes/${joke.id}/delete">Delete</a>
-				</c:if>
-				<br><br>
-			</c:forEach>
-		</c:if> --%>
 		
 		<c:if test="${currentUser != null}">
 			<div class="level-item is-size-3">
 				<h1><b>Dad Jokes Feed</b></h1>
 			</div>
-			<div id="jokes_feed">
-				<%-- <c:forEach items="${jokes}" var="joke">
-					<p><a href="/users/${joke.creator.id}">${joke.creator.username}</a> created:</p>
-					<p><img src="http://i.imgur.com/${joke.imgurl}.jpg"></p>
-					<p>
-						<c:choose>
-							<c:when test="${joke.action == 'Like'}">
-								<a href="/users/${joke.jokeID}/like">Like</a> | 
-							</c:when>
-							<c:otherwise>
-								<a href="/users/${joke.jokeID}/unlike">Unlike</a> | 
-							</c:otherwise>
-						</c:choose>
-						${joke.numberOfLikes} likes total
-					</p>
-					<br>
-				</c:forEach> --%>
-			</div>
+			<div id="jokes_feed"></div>
 		</c:if>
 	
 	</div> <!-- end container class -->
@@ -244,7 +196,7 @@
 	<footer class="has-text-centered">
 		&copy; 2017 <a href="http://github.com/chaocharliehuang" target="_blank">
 		Chao Charlie Huang</a> | 
-		Built using Spring Boot, Bulma CSS, icanhazdadjoke API, Imgflip API, and Imgur API
+		Built using Spring Boot, MySQL, icanhazdadjoke API, Imgflip API, Imgur API, and Bulma CSS
 	</footer>
 	
 
@@ -346,24 +298,24 @@
 				success: function(res) {
 					var jokesFeedHTML = '';
 					var resObject = JSON.parse(res);
-					for (var key in resObject) {
+					for (var i = 0; i < resObject.length; i++) {
 						jokesFeedHTML += '<p><a href="/users/';
-						jokesFeedHTML += resObject[key].creatorID + '">';
-						jokesFeedHTML += resObject[key].creatorUsername + '</a> created:</p>';
+						jokesFeedHTML += resObject[i].creatorID + '">';
+						jokesFeedHTML += resObject[i].creatorUsername + '</a> created:</p>';
 						jokesFeedHTML += '<p><img src="http://i.imgur.com/';
-						jokesFeedHTML += resObject[key].imgurl + '.jpg"></p><p>';
+						jokesFeedHTML += resObject[i].imgurl + '.jpg"></p><p>';
 						
-						if (resObject[key].action === "Like") {
-							jokesFeedHTML += '<a href="/jokes/' + resObject[key].jokeID;
+						if (resObject[i].action === "Like") {
+							jokesFeedHTML += '<a href="/jokes/' + resObject[i].jokeID;
 							jokesFeedHTML += '/like">Like</a>';
 						} else {
-							jokesFeedHTML += '<a href="/jokes/' + resObject[key].jokeID;
+							jokesFeedHTML += '<a href="/jokes/' + resObject[i].jokeID;
 							jokesFeedHTML += '/unlike">Unlike</a>';
 						}
-						jokesFeedHTML += ' | ' + resObject[key].numberOfLikes + ' total likes';
+						jokesFeedHTML += ' | ' + resObject[i].numberOfLikes + ' total likes';
 						
-						if (resObject[key].delete) {
-							jokesFeedHTML += ' | <a href="/jokes/' + resObject[key].jokeID;
+						if (resObject[i].delete) {
+							jokesFeedHTML += ' | <a href="/jokes/' + resObject[i].jokeID;
 							jokesFeedHTML += '/delete">Delete</a>';
 						}
 						
@@ -384,24 +336,24 @@
 	    				success: function(res) {
 	    					var jokesFeedHTML = '';
 	    					var resObject = JSON.parse(res);
-	    					for (var key in resObject) {
+	    					for (var i = 0; i < resObject.length; i++) {
 	    						jokesFeedHTML += '<p><a href="/users/';
-	    						jokesFeedHTML += resObject[key].creatorID + '">';
-	    						jokesFeedHTML += resObject[key].creatorUsername + '</a> created:</p>';
+	    						jokesFeedHTML += resObject[i].creatorID + '">';
+	    						jokesFeedHTML += resObject[i].creatorUsername + '</a> created:</p>';
 	    						jokesFeedHTML += '<p><img src="http://i.imgur.com/';
-	    						jokesFeedHTML += resObject[key].imgurl + '.jpg"></p><p>';
+	    						jokesFeedHTML += resObject[i].imgurl + '.jpg"></p><p>';
 	    						
-	    						if (resObject[key].action === "Like") {
-	    							jokesFeedHTML += '<a href="/jokes/' + resObject[key].jokeID;
+	    						if (resObject[i].action === "Like") {
+	    							jokesFeedHTML += '<a href="/jokes/' + resObject[i].jokeID;
 	    							jokesFeedHTML += '/like">Like</a>';
 	    						} else {
-	    							jokesFeedHTML += '<a href="/jokes/' + resObject[key].jokeID;
+	    							jokesFeedHTML += '<a href="/jokes/' + resObject[i].jokeID;
 	    							jokesFeedHTML += '/unlike">Unlike</a>';
 	    						}
-	    						jokesFeedHTML += ' | ' + resObject[key].numberOfLikes + ' total likes';
+	    						jokesFeedHTML += ' | ' + resObject[i].numberOfLikes + ' total likes';
 	    						
-	    						if (resObject[key].delete) {
-	    							jokesFeedHTML += ' | <a href="/jokes/' + resObject[key].jokeID;
+	    						if (resObject[i].delete) {
+	    							jokesFeedHTML += ' | <a href="/jokes/' + resObject[i].jokeID;
 	    							jokesFeedHTML += '/delete">Delete</a>';
 	    						}
 	    						

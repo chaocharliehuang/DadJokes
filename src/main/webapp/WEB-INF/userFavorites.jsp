@@ -68,10 +68,6 @@
 			
 			<div class="level-right">
 				<div class="level-item">
-					<img src="http://i.imgur.com/oyS1IiF.png" id="bubbles">
-				</div>
-			
-				<div class="level-item">
 					<a href="/home">Home</a>
 				</div>
 			</div> <!-- end level-right -->
@@ -86,12 +82,7 @@
 	</div>
 	
 	<c:if test="${!empty jokes}">
-		<div id="jokes_feed">
-			<%-- <c:forEach items="${jokes}" var="joke">
-				<p><img src="http://i.imgur.com/${joke.imgurl}.jpg"></p>
-				<br>
-			</c:forEach> --%>
-		</div>
+		<div id="jokes_feed"></div>
 	</c:if>
 
 </main>
@@ -99,7 +90,7 @@
 	<footer class="has-text-centered">
 		&copy; 2017 <a href="http://github.com/chaocharliehuang" target="_blank">
 		Chao Charlie Huang</a> | 
-		Built using Spring Boot, Bulma CSS, icanhazdadjoke API, Imgflip API, and Imgur API
+		Built using Spring Boot, MySQL, icanhazdadjoke API, Imgflip API, Imgur API, and Bulma CSS
 	</footer>
 	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -111,21 +102,21 @@
 				success: function(res) {
 					var jokesFeedHTML = '';
 					var resObject = JSON.parse(res);
-					for (var key in resObject) {
+					for (var i = 0; i < resObject.length; i++) {
 						jokesFeedHTML += '<p><img src="http://i.imgur.com/';
-						jokesFeedHTML += resObject[key].imgurl + '.jpg"></p><p>';
+						jokesFeedHTML += resObject[i].imgurl + '.jpg"></p><p>';
 						
-						if (resObject[key].action === "Like") {
-							jokesFeedHTML += '<a href="/jokes/' + resObject[key].jokeID;
+						if (resObject[i].action === "Like") {
+							jokesFeedHTML += '<a href="/jokes/' + resObject[i].jokeID;
 							jokesFeedHTML += '/like">Like</a>';
 						} else {
-							jokesFeedHTML += '<a href="/jokes/' + resObject[key].jokeID;
+							jokesFeedHTML += '<a href="/jokes/' + resObject[i].jokeID;
 							jokesFeedHTML += '/unlike">Unlike</a>';
 						}
-						jokesFeedHTML += ' | ' + resObject[key].numberOfLikes + ' total likes';
+						jokesFeedHTML += ' | ' + resObject[i].numberOfLikes + ' total likes';
 						
-						if (resObject[key].delete) {
-							jokesFeedHTML += ' | <a href="/jokes/' + resObject[key].jokeID;
+						if (resObject[i].delete) {
+							jokesFeedHTML += ' | <a href="/jokes/' + resObject[i].jokeID;
 							jokesFeedHTML += '/delete">Delete</a>';
 						}
 						
@@ -146,21 +137,21 @@
 	    				success: function(res) {
 	    					var jokesFeedHTML = '';
 	    					var resObject = JSON.parse(res);
-	    					for (var key in resObject) {
+	    					for (var i = 0; i < resObject.length; i++) {
 	    						jokesFeedHTML += '<p><img src="http://i.imgur.com/';
-	    						jokesFeedHTML += resObject[key].imgurl + '.jpg"></p><p>';
+	    						jokesFeedHTML += resObject[i].imgurl + '.jpg"></p><p>';
 	    						
-	    						if (resObject[key].action === "Like") {
-	    							jokesFeedHTML += '<a href="/jokes/' + resObject[key].jokeID;
+	    						if (resObject[i].action === "Like") {
+	    							jokesFeedHTML += '<a href="/jokes/' + resObject[i].jokeID;
 	    							jokesFeedHTML += '/like">Like</a>';
 	    						} else {
-	    							jokesFeedHTML += '<a href="/jokes/' + resObject[key].jokeID;
+	    							jokesFeedHTML += '<a href="/jokes/' + resObject[i].jokeID;
 	    							jokesFeedHTML += '/unlike">Unlike</a>';
 	    						}
-	    						jokesFeedHTML += ' | ' + resObject[key].numberOfLikes + ' total likes';
+	    						jokesFeedHTML += ' | ' + resObject[i].numberOfLikes + ' total likes';
 	    						
-	    						if (resObject[key].delete) {
-	    							jokesFeedHTML += ' | <a href="/jokes/' + resObject[key].jokeID;
+	    						if (resObject[i].delete) {
+	    							jokesFeedHTML += ' | <a href="/jokes/' + resObject[i].jokeID;
 	    							jokesFeedHTML += '/delete">Delete</a>';
 	    						}
 	    						
